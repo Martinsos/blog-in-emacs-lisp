@@ -1,0 +1,10 @@
+* How to add a font
+To add a font to the blog, one has to:
+- Add its files to =fonts/=.
+- Define ~@font-face~ (or a few) for it in =fonts/fonts.css=.
+- Use the ~@font-face~ in =main.css=.
+- If it is the main font of the page, update the preload link in the head (defined in =tools/org.publish.el= at the moment of writing).
+
+* Iosevka
+I downloaded Iosevka fonts from their Github releases: =PkgWebFont-Iosevka-34.1.0.zip= and =PkgWebFont-IosevkaAile-34.1.0.zip=.
+I then extracted and organized files of the variations I plan to use.

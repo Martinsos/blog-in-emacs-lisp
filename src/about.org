@@ -1,0 +1,34 @@
+#+TITLE:About me
+
+#+begin_quote
+Nulla dies sine linea - Pliny the Elder
+#+end_quote
+
+My name is Martin Sosic and I am a computer scientist / software engineer / startup founder. \\
+Not to be confused with [[https://matija.me][Matija Sosic]] (but I get it if you do), who is my twin brother and does most of the projects with me.
+
+I love thinking, learning, solving challenging problems, and creating (sometimes useful) things!
+
+** Projects
+Some of the projects I am proud of:
+- [[https://github.com/wasp-lang/wasp][Wasp]] - The innovative full-stack web framework.
+- [[https://talkbook.co/home][Talkbook]] - My first startup: lead-gen tool for professional speakers.
+- [[https://github.com/Martinsos/edlib][edlib]] - C/C++ library for sequence alignment I wrote for master's thesis that beyond my expectations became one of the foundational tools in bioinformatics.
+- [[https://github.com/wasp-lang/strong-paths][strong-path]] - Library for (very) strongly typed paths in Haskell.
+- [[https://github.com/Martinsos/hchess][hchess]] - My never-ending exploration of implementing chess in Haskell.
+- [[./posts/building-my-first-keyboard.org][Mechanical keyboard]] I made from scratch (mostly).
+
+** Tech
+While I try not to get too stuck on specific tech/tools and keep up with the times, here is a list of a few that I just love more than I should:
+- *Emacs* - My command center and lifetime DIY project ([[https://github.com/Martinsos/dotfiles/blob/master/vanilla-emacs.d/Emacs.org][config]]).
+- *Haskell* - Still the best language I ever used.
+- *Arch Linux* - Keeps me sharp.
+
+** Other
+Some other stuff I am excited about: startups, maths, competitive programming, clean code, software craftsmanship, calisthenics, philosophy, playing music, mechanical keyboards, gaming.
+
+** Contact
+- https://github.com/Martinsos
+- https://www.linkedin.com/in/martinsosic
+- https://x.com/martinsosic
+- ~gmailize $ author.surname <> "." <> author.name~

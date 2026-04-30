@@ -1,0 +1,256 @@
+
+:root {
+  /* I preload the main font in <head>, so update that if main font here changes. */
+  --font-main: "Iosevka Aile", sans-serif;
+  --font-main-size: 1.2rem;
+
+  --font-mono: "Iosevka Extended", monospace;
+  --font-mono-size: 0.90em;
+
+  --font-color: #515151;
+  --font-color-dimmed: color-mix(in oklab, var(--font-color) 70%, white);
+  --font-color-strong: #333;
+  --background-color: #fafafa;
+  --code-bg-color: #f0f0f0; /* Copy of value from highlightjs CSS, keep it in sync. */
+
+  --accent-color: #ab5656;
+  --accent-color-lighter: color-mix(in oklab, var(--accent-color) 70%, white);
+
+  --code-fg-color: var(--accent-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --font-color: #c9c9c9;
+    --font-color-dimmed: color-mix(in oklab, var(--font-color) 70%, black);
+    --font-color-strong: #e0e0e0;
+    --background-color: #1a1a1a;
+    --code-bg-color: #282c34; /* Copy of value from highlightjs CSS, keep it in sync. */
+  }
+}
+
+body {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: var(--font-main);
+  font-weight: normal;
+  font-size: var(--font-main-size);
+  color: var(--font-color);
+  background-color: var(--background-color);
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--font-color-strong);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+}
+
+h1::before, h2::before, h3::before, h4::before, h5::before, h6::before {
+  color: var(--accent-color);
+  font-family: var(--font-mono);
+  margin-right: 0.4em;
+}
+h2::before { content: "#"; }
+h3::before { content: "##"; }
+h4::before { content: "###"; }
+h5::before { content: "####"; }
+h6::before { content: "#####"; }
+
+strong, b {
+  color: var(--font-color-strong);
+}
+
+.accented {
+  color: var(--accent-color);
+}
+
+a {
+  color: var(--accent-color);
+  text-decoration: underline var(--accent-color) 2px;
+  &:hover {
+    color: var(--accent-color-lighter);
+  }
+}
+
+figure {
+  text-align: center;
+
+  & img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+code, pre, kbd, samp {
+  font-family: var(--font-mono);
+  font-weight: normal;
+  font-size: var(--font-mono-size);
+  line-height: 1.4;
+
+  /* If not a code block (which we style fully), apply simple styling. */
+  &:not(.code-block *) {
+    background: var(--code-bg-color);
+    color: var(--code-fg-color);
+    padding: 0em 0.25em;
+  }
+}
+
+.code-block {
+  margin: 1rem 0;
+  overflow-x: hidden;
+
+  & .code-block-info {
+    padding-left: 0.5em;
+    font-size: 0.8em;
+
+    --augmenting-color: black;
+    @media (prefers-color-scheme: dark) { --augmenting-color: white; }
+    background: color-mix(in oklab, var(--code-bg-color) 95%, var(--augmenting-color));
+    color: color-mix(in oklab, var(--code-bg-color) 50%, var(--augmenting-color));
+  }
+
+  & pre {
+    margin: 0;
+  }
+}
+
+.code-block {
+  code.language-ascii-diagram {
+    .hljs-symbol {
+      font-weight: bold;
+    }
+  }
+}
+
+#post-header {
+  margin-top: 1.5rem;
+  margin-bottom: 3rem;
+
+  &> * {
+    margin: 0px;
+  }
+
+  #post-date {
+    margin-top: 0.5rem;
+    color: var(--font-color-dimmed);
+  }
+}
+
+a.post-entry {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0rem;
+    margin-bottom: 1.5rem;
+  }
+
+  & time {
+    white-space: nowrap;
+    color: var(--font-color-dimmed);
+    &::after {
+      content: ";";
+      margin-left: 0.5rem;
+      color: var(--accent-color);
+      font-weight: bold;
+    }
+  }
+
+  & .post-entry-title {
+    margin: 0;
+    font-size: inherit;
+    color: var(--font-color-strong);
+  }
+  &:hover .post-entry-title {
+    color: var(--link-hover-color);
+  }
+}
+
+#postamble {
+  color: var(--font-color-dimmed);
+  font-size: 0.9rem;
+  margin-top: 4rem;
+  border-top: 1px solid;
+
+  .postamble-post {
+    margin-top: 1rem;
+    p { margin-top: 0.5rem }
+  }
+}
+
+#footnotes {
+  color: var(--font-color-dimmed);
+  font-size: 0.9rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-top: 2rem;
+  position: relative;
+
+  .footnotes {
+    display: none;
+  }
+
+  .footdef {
+    display: flex;
+    gap: 0.4em;
+
+    .footpara {
+      margin: 0;
+    }
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5rem;
+    height: 1px; /* border thickness */
+    background-color: var(--font-color-dimmed);
+  }
+}
+
+.footref {
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.footnum, .footref {
+  &::before { content: "["; }
+  &::after { content: "]"; }
+}
+
+
+blockquote {
+  color: var(--font-color-dimmed);
+  font-style: italic;
+  margin-left: 0.5rem;
+  padding-left: 1rem;
+  position: relative;
+  overflow: hidden;
+
+  p { margin: 0.5rem }
+  /* p + p { margin-top: 1rem; } */
+
+  &::before, &::after{
+    position: absolute;
+    color: var(--accent-color);
+  }
+
+  &::after {
+    content: "";
+    left: 0px;
+    top: 0px;
+    width: 4px;
+    height: 100%;
+    background-color: currentColor;
+  }
+}

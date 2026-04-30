@@ -1,0 +1,59 @@
+* My personal blog (martinsos.com)
+
+** Design principle
+I want my blog to be as simple and intuitive for me to use as possible.
+Being able to start writing immediatelly after not using it for longer time beats having rich features. I like it minimal anyway.
+
+That means sticking to a small set of evergreen, stable tech that I know well (emacs, bash, Makefile) + keeping its overall structure and features simple.
+
+** Overview
+- =src/= - all the source material that makes up the blog: pages, posts, html layouts (=layout.el=), css, js, images, ...
+  - There is a common =layout.el= at the top level, and then there is a post-specific =layout.el= in =posts/= dir.
+- =build/= - build pipeline: logic (mostly) in elisp that takes all from =src/= and produces a web page from it in =dist/=.
+- =dist/= - an actual blog that can be published (distributed) as a web page.
+
+** Development / writing
+*** Build commands
+- ~make serve~ to run a simple dev server that hosts the built blog (in =dist/=) on =localhost=.
+- ~make build-inc~ (or just ~make~) to generate/build the blog from =src/= in =dist/=.
+  This is incremental build, so deleted files will remain around and state in =dist/= can become wrong with time due to that, but is fast and practical for development.
+- ~make build-clean~ to generate/build the blog from =src/= from scratch in =dist/=.
+  This is clean build, therefore slow because it first deletes all from =dist/=, but it guarantees that contents of =dist/= will correctly correspond to contents from =src/=. Slow, but guarantees correctness.
+
+***  Typical workflow
+- Create new or edit existing post in =src/posts/=. Its images/assets goes into the dir next to it with the same name as the post file.
+- ~make serve~ once in the terminal at the start of the writing session
+- ~project-compile~ (or ~project-recompile~ on later calls) to re-build the project from emacs as needed while editing the file
+- ~make build-clean~ when preparing to publish the blog.
+
+** Publishing
+I am hosting the blog as static page on Cloudflare.
+
+First, I should make sure that content in =dist/= is what I want to publish.
+Normally I do ~make build-clean~ and then ~make serve~ to verify it is all looking good.
+
+Then, ~make publish~ to publish the contents of =dist/=!
+
+** Mentions
+I got initial idea and push for implementing this blog primarily in elisp and org from this great video from System Crafters: [[https://systemcrafters.net/publishing-websites-with-org-mode/building-the-site/][Build Your Website with Org Mode]].
+
+** TODO
+- [-] Org publish assigns random ids each time to elements, unless they have CUSTOM_ID!
+  That sucks. Here is a hack by alphapapa, look into that: https://github.com/alphapapa/unpackaged.el?tab=readme-ov-file#export-to-html-with-useful-anchors .
+  - [X] Implement first version.
+  - [ ] Review code completely.
+- [ ] Look if any extra consideration is needed for mobile.
+- [ ] Add favicon.
+- [ ] Optimize image sizes?
+- [ ] Add stuff like RSS, sitemap (maybe?), anything else like that.
+  - https://list.orgmode.org/20110806215735.GA19596@facies.mindmutation.net/
+- [ ] Do something with the EXCERPT and FILETAGS?
+- [ ] Maybe add "Snippets" next to "Posts", for small stuff. Microblogging.
+- [ ] Materials / Tutorials / how other people did it:
+  - [ ] READ: org export manual: https://orgmode.org/guide/HTML-Export.html
+  - [ ] READ: https://opensource.com/article/20/3/blog-emacs
+  - [ ] READ: https://nicolas.petton.fr/blog/blogging-with-org-mode.html
+  - [ ] For reference: https://diego.codes/post/blogging-with-org/
+  - [ ] For reference: https://github.com/bastibe/org-static-blog/
+  - [ ] For reference: https://github.com/emacsorphanage/org-page
+  - [ ] Interesting: https://github.com/juanjosegarciaripoll/org-thtml

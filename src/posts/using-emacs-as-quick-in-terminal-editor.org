@@ -1,0 +1,22 @@
+#+TITLE: Using Emacs for quick editing in terminal
+#+DATE: 2018-08-28
+#+EXCERPT:
+#+FILETAGS: :emacs:fish:
+
+I have been using emacs for long time, but have for some reason always used vi or nano while in terminal to do small edits.
+Probably because I felt emacs is much heavier and takes longer to start, especially because of all the packages that I have added to it.
+
+Recently I decided to put a little bit of efort to figure out how to best use emacs for quick edits, as I am much more efficient in it.
+I found out that with flag =-Q= (which stands for "quick" - exactly what we need!) emacs runs without loading init file and showing initial screens, while with flag =-nw= it does not open a window but runs in terminal. I additionally wanted to hide menu bar, for which I used ~(menu-bar-mode -1)~.
+
+Finally, I ended up adding following lines into my =config.fish= file (for bash you could put something very similar into =.bashrc=):
+
+#+BEGIN_SRC sh
+set -x EDITOR "emacs -Q -nw --eval='(menu-bar-mode -1)'"
+alias e=$EDITOR
+alias se="sudo $EDITOR"
+#+END_SRC
+
+This sets emacs in "lightweight" mode as default editor in terminal, while I also have handy ~e~ command to call manually when editing files and ~se~ to call it with ~sudo~.
+
+That is it, emacs all the way!

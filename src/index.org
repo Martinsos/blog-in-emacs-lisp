@@ -1,0 +1,38 @@
+#+TITLE:Martinsos' blog
+#+OPTIONS: title:nil
+
+#+begin_export html
+<header>
+  <h1 class="title">Martinsos<span class="accented">'</span> blog</h1>
+</header>
+#+end_export
+
+
+Hi! My name is Martin and welcome to my blog, where I mainly write about computers, startups, books and whatever side project I am working on when not focusing on my main project (at the moment of writing: [[https://wasp.sh][Wasp]], the innovative web framework). Writing is all me, no AI.
+
+To learn more about me, check the [[./about.org][About]] section.
+
+* Posts
+:PROPERTIES:
+:CUSTOM_ID: posts
+:END:
+
+#+begin_src emacs-lisp :exports results :results html
+  (let ((posts-sorted (sort (copy-sequence blog/all-posts) ;; my/posts is global variable with metadata of all the posts.
+                            (lambda (a b) (time-less-p (car b) (car a))))))
+    (mapconcat
+     (lambda (p)
+       (let ((date-str (format-time-string "%Y-%m-%d" (nth 0 p)))
+             (title (nth 1 p))
+             (filename (nth 2 p)))
+         (format (concat "<a class=\"post-entry\" href=\"./posts/%s\">"
+                         "  <time datetime=\"%s\">%s</time>"
+                         "  <b class=\"post-entry-title\">%s</b>"
+                         "</a>")
+                 (string-replace ".org" ".html" filename)
+                 date-str
+                 date-str
+                 title)))
+     posts-sorted
+     "\n"))
+#+end_src

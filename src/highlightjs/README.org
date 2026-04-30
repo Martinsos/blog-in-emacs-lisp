@@ -1,0 +1,8 @@
+I use https://highlightjs.org/ for syntax highlighting of code blocks.
+
+HighlightJS looks for ~<pre><code class="language-<name>">~ blocks and highlights them.
+
+I used https://highlightjs.org/download to pick languages I want and create a custom =highlight.min.js= file containing syntax highlighting logic for those languages. They recommend doing so instead of selecting all the languages to keep the file small.
+I adjusted background color in light theme CSS to be a bit darker.
+
+If I ever end up needing an additional language, I can download just the =<lang>.min.js= file for it and add it to next to the main one, or I can re-generate the main file so it has that language included.
