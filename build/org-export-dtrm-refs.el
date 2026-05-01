@@ -2,72 +2,174 @@
 
 (require 'ox-publish)
 
-;;; Generate deterministic IDs instead of random ones for HTML export.
-;;; Headings get slugified title-based IDs, other elements get sequential IDs.
+;;; Override `org-export-get-reference' (in ox.el) and
+;;; `org-publish-resolve-external-link' (in ox-publish.el) to generate
+;;; deterministic IDs for HTML export instead of randomized ones that change
+;;; each time.  Headings get slugified title-based IDs, other elements get
+;;; sequential "el-N" IDs, and cross-file links resolve to the same slug
+;;; that the target file's heading will get.
 
 (defun org-export-dtrm-refs-use ()
-  "Override `org-export-get-reference' to generate deterministic IDs."
-  (advice-add 'org-export-get-reference :override #'org-export-dtrm-refs--get-ref))
+  "Install the deterministic-ID overrides on org's reference machinery."
+  (advice-add 'org-export-get-reference :override #'org-export-dtrm-refs--get-reference)
+  (advice-add 'org-publish-resolve-external-link :override #'org-export-dtrm-refs--resolve-external-link))
 
-;; TODO: Review this function.
-(defun org-export-dtrm-refs--get-ref (datum info)
+;; Replicate of the advised `org-export-get-references', with minimal changes needed
+;; to get it to generate deterministic IDs. These changes are marked with DTRM: comments.
+;; Inspired by https://github.com/alphapapa/unpackaged.el?tab=readme-ov-file#export-to-html-with-useful-anchors .
+(defun org-export-dtrm-refs--get-reference (datum info)
   "Like `org-export-get-reference' but generates deterministic IDs.
-Uses heading titles for headings, sequential counters for other elements."
+For headings, the ID is a slug derived from the heading title.
+For other elements, the ID is a sequential counter (e.g. \"el-3\")."
   (let ((cache (plist-get info :internal-references)))
     (or (car (rassq datum cache))
         (let* ((crossrefs (plist-get info :crossrefs))
                (cells (org-export-search-cells datum))
+               ;; Preserve any pre-existing association between
+               ;; a search cell and a reference, i.e., when some
+               ;; previously published document referenced a location
+               ;; within current file (see
+               ;; `org-publish-resolve-external-link').
+               ;;
+               ;; However, there is no guarantee that search cells are
+               ;; unique, e.g., there might be duplicate custom ID or
+               ;; two headings with the same title in the file.
+               ;;
+               ;; As a consequence, before reusing any reference to
+               ;; an element or object, we check that it doesn't refer
+               ;; to a previous element or object.
                (new (or (cl-some
                          (lambda (cell)
                            (let ((stored (cdr (assoc cell crossrefs))))
                              (when stored
-                               ;; TODO: THere is something suspicious here, AI first tried to call
-                               ;; org-export-format-reference on stored value and then pass that to
-                               ;; the assoc, but then later that appeared to error so now it skipped
-                               ;; that as it is unneccesary, allegedly what we store is already in
-                               ;; ok format. Maybe this is ok now, but look into why it was doing
-                               ;; that in the first place, maybe problem is somewhere else.
+                               ;; DTRM: original wraps `stored' with `org-export-format-reference'
+                               ;; before this `assoc' check, because vanilla org stores integers in
+                               ;; `:crossrefs' while cache keys are the formatted "org%07x" strings.
+                               ;; Our override stores already-final strings (slugs / "el-N") in
+                               ;; `:internal-references' -- which then propagate to `:crossrefs' --
+                               ;; so `stored' is already a string and formatting it would error.
                                (and (not (assoc stored cache)) stored))))
                          cells)
-                        (when (org-element-property :raw-value datum)
+                        ;; DTRM: instead of falling back to a random reference via
+                        ;; `(org-export-new-reference cache)', we generate a deterministic one: a
+                        ;; slug from the heading title for headings, or a sequential "el-N" for
+                        ;; everything else.
+                        (when (eq (org-element-type datum) 'headline)
                           (org-export-dtrm-refs--generate-heading-id datum cache))
-                        (format "el-%d" (hash-table-count
-                                         (or (plist-get info :org-export-dtrm-refs-element-counter)
-                                             (let ((ht (make-hash-table)))
-                                               (plist-put info :org-export-dtrm-refs-element-counter ht)
-                                               ht))))))
+                        (org-export-dtrm-refs--generate-element-id info)))
+               ;; DTRM: original wraps `new' with `org-export-format-reference' here to turn the
+               ;; integer into "org%07x". Our `new' is already the final string, so we use it
+               ;; directly.
                (reference-string new))
-          ;; Track non-heading element count.
-          (unless (org-element-property :raw-value datum)
-            (let ((ht (plist-get info :org-export-dtrm-refs-element-counter)))
-              (when ht (puthash (hash-table-count ht) t ht))))
+          ;; Cache contains both data already associated to
+          ;; a reference and in-use internal references, so as to make
+          ;; unique references.
           (dolist (cell cells) (push (cons cell new) cache))
+          ;; Retain a direct association between reference string and
+          ;; DATUM since (1) not every object or element can be given
+          ;; a search cell (2) it permits quick lookup.
           (push (cons reference-string datum) cache)
           (plist-put info :internal-references cache)
           reference-string))))
 
+;; Replica of the advised `org-publish-resolve-external-link', with minimal changes needed
+;; to get it to resolve to deterministic IDs that in sync with those
+;; generated by `org-export-dtrm-refs--get-reference'.
+;; These changes are marked with DTRM: comments.
+(defun org-export-dtrm-refs--resolve-external-link (search file &optional prefer-custom)
+  "Like `org-publish-resolve-external-link' but uses deterministic IDs.
+For cross-file links that haven't seen the target file yet, this
+pre-populates the publish cache with a slug derived from SEARCH so
+that when the target FILE is later published, our `--get-reference'
+picks up the same slug and both ends of the link agree on the id."
+  (cond
+   ((and prefer-custom
+         (if (string-prefix-p "#" search)
+             (substring search 1)
+           (with-current-buffer (find-file-noselect file)
+             (org-with-point-at 1
+               (let ((org-link-search-must-match-exact-headline t))
+                 (condition-case err
+                     (org-link-search search nil t)
+                   (error
+                    (signal 'org-link-broken (cdr err)))))
+               (and (derived-mode-p 'org-mode)
+                    (org-at-heading-p)
+                    (org-string-nw-p (org-entry-get (point) "CUSTOM_ID"))))))))
+   ((not org-publish-cache)
+    (progn
+      (message "Reference %S in file %S cannot be resolved without publishing"
+               search
+               file)
+      "MissingReference"))
+   (t
+    (let* ((filename (file-truename file))
+           (crossrefs
+            (org-publish-cache-get-file-property filename :crossrefs nil t))
+           (cells (org-export-string-to-search-cell search)))
+      (or
+       ;; Look for reference associated to search cells triggered by
+       ;; LINK.  It can match when targeted file has been published
+       ;; already.
+       (let ((known (cdr (cl-some (lambda (c) (assoc c crossrefs)) cells))))
+         ;; DTRM: original returns `(org-export-format-reference known)', turning the cached integer
+         ;; into "org%07x". We store the final reference string in the cache, so we use it as-is.
+         known)
+       ;; Search cell is unknown so far.  Generate a new internal
+       ;; reference that will be used when the targeted file will be
+       ;; published.
+       (let ((new (org-export-dtrm-refs--slug-from-search search)))
+         ;; DTRM: original generates a random integer via `(org-export-new-reference crossrefs)' and
+         ;; formats it. We instead derive a slug from SEARCH so that when the target FILE is later
+         ;; published, our `--get-reference' will read this same slug from the cache and use it as
+         ;; the heading's id -- making both ends of the cross-file link agree.
+         (dolist (cell cells) (push (cons cell new) crossrefs))
+         (org-publish-cache-set-file-property filename :crossrefs crossrefs)
+         new))))))
+
 (defun org-export-dtrm-refs--generate-heading-id (datum ids-cache)
   "Generate an id for DATUM heading title, unique within IDS-CACHE.
 DATUM is an org-element object.
-We do so by turning title into a slug and using it as an id:
-turn urls into text, take only alphanums, replace the rest with hyphens.
-E.g. \"Test Title [[test.com][testpage]]!\" becomes test-title-testpage.
-If this comes out empty, we just use \"heading\" as id.
-And finally, if this id is not unique (per IDS-CACHE), we add counter
-to it till it is."
+The id is a slug derived from the title via `--heading-title-to-id'.
+If that id is not unique (per IDS-CACHE), we append a counter
+suffix until it is."
   (let* ((title (substring-no-properties (org-element-property :raw-value datum)))
-         (slug (org-export-dtrm-refs--slugify (org-export-dtrm-refs--links-to-text title)))
-         (id (if (string-empty-p slug) "heading" slug)))
+         (id (org-export-dtrm-refs--heading-title-to-id title)))
     (let ((unique-id id)
           (counter 2))
       (while (assoc unique-id ids-cache)
         (setq unique-id (format "%s-%d" id counter)
-              counter (1+ counter))
-      )
-      unique-id
-    )
-  )
-)
+              counter (1+ counter)))
+      unique-id)))
+
+(defun org-export-dtrm-refs--generate-element-id (info)
+  "Generate a sequential \"el-N\" id, unique within this export.
+Uniqueness is maintained via a counter stored in INFO under
+`:org-export-dtrm-refs-element-counter'."
+  (let ((n (or (plist-get info :org-export-dtrm-refs-element-counter) 0)))
+    (plist-put info :org-export-dtrm-refs-element-counter (1+ n))
+    (format "el-%d" n)))
+
+(defun org-export-dtrm-refs--slug-from-search (search)
+  "Derive a deterministic id from a SEARCH string used in a cross-file link.
+SEARCH is the part after `::' in `[[file:other.org::SEARCH]]'.  Returns:
+- for `*Heading' or fuzzy `Heading', a slug matching what
+  `--generate-heading-id' would produce for the same title;
+- for `#custom-id', the literal custom id."
+  (cond
+   ((string-prefix-p "#" search) (substring search 1))
+   ((string-prefix-p "*" search)
+    (org-export-dtrm-refs--heading-title-to-id (substring search 1)))
+   (t
+    (org-export-dtrm-refs--heading-title-to-id search))))
+
+(defun org-export-dtrm-refs--heading-title-to-id (title)
+  "Turn a heading TITLE into a slug usable as an HTML id.
+First strip out org link markup (so [[u][d]] becomes d), then slugify.
+Returns \"heading\" if the slug comes out empty."
+  (let ((slug (org-export-dtrm-refs--slugify
+               (org-export-dtrm-refs--links-to-text title))))
+    (if (string-empty-p slug) "heading" slug)))
 
 (defun org-export-dtrm-refs--links-to-text (str)
   "In given string, replace org links with their textual representation.
@@ -76,7 +178,6 @@ That means [[target][desc]] becomes desc, and [[target]] becomes target."
    (rx "[[" (group (* (not "]"))) (opt "][" (group (* (not "]")))) "]]")
    (lambda (match) (or (match-string 2 match) (match-string 1 match)))
    str))
-
 
 (defun org-export-dtrm-refs--slugify (str)
   "Turn given string into a \"slug\": a stripped version containing only alphanum

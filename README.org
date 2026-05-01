@@ -38,10 +38,6 @@ Then, ~make publish~ to publish the contents of =dist/=!
 I got initial idea and push for implementing this blog primarily in elisp and org from this great video from System Crafters: [[https://systemcrafters.net/publishing-websites-with-org-mode/building-the-site/][Build Your Website with Org Mode]].
 
 ** TODO
-- [-] Org publish assigns random ids each time to elements, unless they have CUSTOM_ID!
-  That sucks. Here is a hack by alphapapa, look into that: https://github.com/alphapapa/unpackaged.el?tab=readme-ov-file#export-to-html-with-useful-anchors .
-  - [X] Implement first version.
-  - [ ] Review code completely.
 - [ ] Look if any extra consideration is needed for mobile.
 - [ ] Add favicon.
 - [ ] Optimize image sizes?
@@ -49,11 +45,3 @@ I got initial idea and push for implementing this blog primarily in elisp and or
   - https://list.orgmode.org/20110806215735.GA19596@facies.mindmutation.net/
 - [ ] Do something with the EXCERPT and FILETAGS?
 - [ ] Maybe add "Snippets" next to "Posts", for small stuff. Microblogging.
-- [ ] Materials / Tutorials / how other people did it:
-  - [ ] READ: org export manual: https://orgmode.org/guide/HTML-Export.html
-  - [ ] READ: https://opensource.com/article/20/3/blog-emacs
-  - [ ] READ: https://nicolas.petton.fr/blog/blogging-with-org-mode.html
-  - [ ] For reference: https://diego.codes/post/blogging-with-org/
-  - [ ] For reference: https://github.com/bastibe/org-static-blog/
-  - [ ] For reference: https://github.com/emacsorphanage/org-page
-  - [ ] Interesting: https://github.com/juanjosegarciaripoll/org-thtml
