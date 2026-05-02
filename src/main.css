@@ -25,7 +25,7 @@
     --font-color-dimmed: color-mix(in oklab, var(--font-color) 70%, black);
     --font-color-strong: #e0e0e0;
     --background-color: #1a1a1a;
-    --code-bg-color: #282c34; /* Copy of value from highlightjs CSS, keep it in sync. */
+    --code-bg-color: #202329; /* Copy of value from highlightjs CSS, keep it in sync. */
   }
 }
 
@@ -72,6 +72,15 @@ a {
   text-decoration: underline var(--accent-color) 2px;
   &:hover {
     color: var(--accent-color-lighter);
+  }
+}
+
+/* Remove default <p> margins in lists since they mess things up,
+   but keep them between two <p>s. */
+li > p {
+  margin: 0;
+  & + p {
+    margin-top: 0.5rem;
   }
 }
 

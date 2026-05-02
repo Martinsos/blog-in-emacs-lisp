@@ -3,27 +3,42 @@
 (defconst
   blog/html-head-common
   (string-join
-   '(;; Fonts.
-     "<link rel=\"preload\" href=\"/fonts/IosevkaAile/Regular.woff2\" as=\"font\" type=\"font/woff2\" crossorigin>"
-     "<link rel=\"stylesheet\" href=\"/fonts/fonts.css\"/>"
+   '(
      ;; Main CSS.
      "<link rel=\"stylesheet\" href=\"/main.css\"/>"
-     ;; Code highlighting.
-     "<link rel=\"stylesheet\" href=\"/highlightjs/atom-one-light.min.css\" media=\"(prefers-color-scheme: light), (prefers-color-scheme: no-preference)\"/>"
-     "<link rel=\"stylesheet\" href=\"/highlightjs/atom-one-dark.min.css\" media=\"(prefers-color-scheme: dark)\"/>"
-     "<script src=\"/highlightjs/highlight.min.js\"></script>"
-     "<script src=\"/highlightjs/dirtree.js\"></script>"
-     "<script src=\"/highlightjs/ascii-diagram.js\"></script>"
-     "<script src=\"/highlightjs/elisp.js\"></script>"
-     ;; The "code-block" class below must match `blog/code-block-class' in build/blog-org-publish-html.el.
+
+     ;; Fonts.
+     "<link rel=\"stylesheet\" href=\"/fonts/fonts.css\"/>"
+
+     ;;; Code highlighting.
+     ;;; Both CSS and JS are loaded async for faster page load since they are not needed urgently.
+     ;;;
+     ;; Using media="print" + onload="this.media=..." trick below to make CSS loading async.
+     "<link rel=\"stylesheet\" href=\"/highlightjs/atom-one-dark.min.css\"
+            media=\"print\"
+            onload=\"this.media='(prefers-color-scheme: dark), (prefers-color-scheme: no-preference)'\"
+      />"
+     "<link rel=\"stylesheet\" href=\"/highlightjs/atom-one-light.min.css\"
+            media=\"print\"
+            onload=\"this.media='(prefers-color-scheme: light)'\"
+      />"
+     "<script defer src=\"/highlightjs/highlight.min.js\"></script>"
+     "<script defer src=\"/highlightjs/dirtree.js\"></script>"
+     "<script defer src=\"/highlightjs/ascii-diagram.js\"></script>"
+     "<script defer src=\"/highlightjs/elisp.js\"></script>"
+     ;; - On DOMContentLoaded so it executes only after deferred scripts load.
+     ;; - The \"code-block\" class below must match `blog/code-block-class' in
+     ;; build/blog-org-publish-html.el.
      "<script>
-          hljs.configure({ cssSelector: \".code-block code\" });
-          hljs.registerLanguage('dirtree', hljsDirTree);
-          hljs.registerLanguage('ascii-diagram', hljsAsciiDiagram);
-          hljs.registerLanguage('elisp', hljsElisp);
-          hljs.registerAliases([\"emacs-lisp\"], { languageName: \"elisp\" });
-          hljs.highlightAll();
-        </script>"
+          document.addEventListener('DOMContentLoaded', function() {
+            hljs.configure({ cssSelector: \".code-block code\" });
+            hljs.registerLanguage('dirtree', hljsDirTree);
+            hljs.registerLanguage('ascii-diagram', hljsAsciiDiagram);
+            hljs.registerLanguage('elisp', hljsElisp);
+            hljs.registerAliases([\"emacs-lisp\"], { languageName: \"elisp\" });
+            hljs.highlightAll();
+          });
+      </script>"
    ) "\n"
   )
 )

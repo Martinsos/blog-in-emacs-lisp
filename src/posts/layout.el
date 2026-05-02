@@ -5,7 +5,9 @@
 
 (defun blog/html-preamble-post (_info)
   (concat
-   blog/home-link "\n"
+   "<nav aria-label=\"Site\">" "\n"
+   "  " blog/home-link "\n"
+   "</nav>" "\n"
   )
 )
 

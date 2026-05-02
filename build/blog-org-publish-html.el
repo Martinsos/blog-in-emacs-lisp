@@ -30,6 +30,9 @@
     (:section-numbers nil "num" nil nil)       ; I set default to nil.
     (:time-stamp-file nil "timestamp" nil nil) ; I set default to nil.
     (:headline-levels nil "H" 5 nil)           ; I set default to 5.
+    (:html-divs nil nil '((preamble "header" "preamble")
+                          (content "main" "content")
+                          (postamble "footer" "postamble")))
     (:html-inner-template nil nil nil)         ; Custom option I created for wrapping the content.
    )
   :translate-alist

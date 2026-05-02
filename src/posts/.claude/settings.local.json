@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(emacsclient -e '\\(symbol-function \\(quote org-export-get-reference\\)\\)')",
+      "Bash(emacsclient *)",
+      "WebFetch(domain:github.com)",
+      "Bash(make build-clean *)"
+    ]
+  }
+}

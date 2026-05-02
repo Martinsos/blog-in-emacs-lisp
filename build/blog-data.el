@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t; flycheck-disabled-checkers: (emacs-lisp-checkdoc) -*-
 
+;;; Blog (meta)data to be available through the blog build pipeline and layouts.
+
 (require 'org)
 (require 'blog-paths (expand-file-name "blog-paths.el" (file-name-directory (or load-file-name buffer-file-name default-directory))))
 
@@ -26,4 +28,4 @@
   )
 )
 
-(provide 'blog-posts)
+(provide 'blog-data)

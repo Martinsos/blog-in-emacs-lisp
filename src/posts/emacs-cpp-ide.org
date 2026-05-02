@@ -1,10 +1,10 @@
 #+TITLE: Emacs as a C++ IDE
 #+DATE: 2017-12-09
-#+EXCERPT: How to set up your Emacs to have the features you would expect from modern C++ IDE.
+#+DESCRIPTION: How to set up your Emacs to have the features you would expect from modern C++ IDE.
 #+FILETAGS: :development:emacs:
 
 #+CAPTION: Emacs + C++
-[[file:emacs-cpp-ide/emacs-cpp.png]]
+[[file:emacs-cpp-ide/emacs-cpp.webp]]
 
 *TL;DR* -> take a look at the [[#summary][summary]].
 

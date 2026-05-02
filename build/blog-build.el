@@ -44,7 +44,7 @@
 (require 'blog-paths (expand-file-name "blog-paths.el" blog/-this-dir))
 (require 'blog-layout (expand-file-name "layout.el" blog/src-dir-abs))
 (require 'blog-post-layout (expand-file-name "layout.el" blog/src-posts-dir-abs))
-(require 'blog-posts (expand-file-name "blog-posts.el" blog/-this-dir))
+(require 'blog-data (expand-file-name "blog-data.el" blog/-this-dir))
 
 (setq
  org-publish-project-alist
@@ -71,8 +71,17 @@
     :html-postamble ,#'blog/html-postamble-post
    )
    ("static-files"
+    ;; Images are only copied as `.webp'. Source `.png'/`.jpg' files may sit next to
+    ;; them in `src/' as masters but are deliberately not published — run
+    ;; `tools/optimize-image.sh' to produce the `.webp' the build will pick up.
+    ;; Likewise, original (full-size) font woff2 files live in `src/fonts/source/'
+    ;; as masters and are deliberately not published — run `tools/subset-fonts.sh'
+    ;; to produce the subsetted woff2 files in `src/fonts/<font>/' that the build
+    ;; will pick up.
     :base-directory ,blog/src-dir-abs
-    :base-extension "html\\|css\\|js\\|png\\|jpg\\|gif\\|woff2"
+    :base-extension "html\\|css\\|js\\|webp\\|svg\\|woff2"
+    :include ("robots.txt")
+    :exclude "^fonts/source/"
     :recursive t
     :publishing-directory ,blog/dist-dir-abs
     :publishing-function org-publish-attachment ; Just copies them.

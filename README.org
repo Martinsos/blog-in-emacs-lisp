@@ -11,6 +11,7 @@ That means sticking to a small set of evergreen, stable tech that I know well (e
   - There is a common =layout.el= at the top level, and then there is a post-specific =layout.el= in =posts/= dir.
 - =build/= - build pipeline: logic (mostly) in elisp that takes all from =src/= and produces a web page from it in =dist/=.
 - =dist/= - an actual blog that can be published (distributed) as a web page.
+- =tools/= - helper tooling, like image optimization and font subsetting.
 
 ** Development / writing
 *** Build commands
@@ -22,6 +23,8 @@ That means sticking to a small set of evergreen, stable tech that I know well (e
 
 ***  Typical workflow
 - Create new or edit existing post in =src/posts/=. Its images/assets goes into the dir next to it with the same name as the post file.
+- When adding an image, run ~tools/optimize-image.sh path/to/image.png~ to produce a =.webp= next to it, and reference the =.webp= from the org file.
+  The build only copies =.webp= images to =dist/=; the original =.png=/=.jpg= is kept in the repo as a master but is not published.
 - ~make serve~ once in the terminal at the start of the writing session
 - ~project-compile~ (or ~project-recompile~ on later calls) to re-build the project from emacs as needed while editing the file
 - ~make build-clean~ when preparing to publish the blog.
@@ -34,14 +37,15 @@ Normally I do ~make build-clean~ and then ~make serve~ to verify it is all looki
 
 Then, ~make publish~ to publish the contents of =dist/=!
 
+** Misc
+- For the sake of simplicity, I on purpose don't have sitemap.xml, since this blog is simple enough and well internally linked that having one wouldn't bring any value.
+
 ** Mentions
 I got initial idea and push for implementing this blog primarily in elisp and org from this great video from System Crafters: [[https://systemcrafters.net/publishing-websites-with-org-mode/building-the-site/][Build Your Website with Org Mode]].
 
 ** TODO
-- [ ] Look if any extra consideration is needed for mobile.
 - [ ] Add favicon.
-- [ ] Optimize image sizes?
-- [ ] Add stuff like RSS, sitemap (maybe?), anything else like that.
+- [ ] Add RSS?
   - https://list.orgmode.org/20110806215735.GA19596@facies.mindmutation.net/
-- [ ] Do something with the EXCERPT and FILETAGS?
+- [ ] Do something with the FILETAGS?
 - [ ] Maybe add "Snippets" next to "Posts", for small stuff. Microblogging.

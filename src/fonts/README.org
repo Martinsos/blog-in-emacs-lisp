@@ -1,10 +1,13 @@
 * How to add a font
 To add a font to the blog, one has to:
-- Add its files to =fonts/=.
-- Define ~@font-face~ (or a few) for it in =fonts/fonts.css=.
-- Use the ~@font-face~ in =main.css=.
-- If it is the main font of the page, update the preload link in the head (defined in =tools/org.publish.el= at the moment of writing).
+- Add its files (ideally .woff2) to =src/fonts/source/=.
+- Run ~tools/subset-fonts.sh~ to generate the subsetted files from the originals. Subsetted means they have only a subset of chars we need for the blog, which can for example result with 10x reduction in file size (e.g. from 1MB per font file to 100kb). This will create font files directly in =src/font/= and you will use these in the blog.
+- Define ~@font-face~ (or a few) for it in =src/fonts/fonts.css=.
+- Use the ~@font-face~ in =src/main.css=.
 
 * Iosevka
-I downloaded Iosevka fonts from their Github releases: =PkgWebFont-Iosevka-34.1.0.zip= and =PkgWebFont-IosevkaAile-34.1.0.zip=.
-I then extracted and organized files of the variations I plan to use.
+I downloaded Iosevka fonts into =src/fonts/source= from their Github releases: =PkgWebFont-Iosevka-34.1.0.zip= and =PkgWebFont-IosevkaAile-34.1.0.zip=.
+
+I then extracted and organized files of the variations I plan to use (Regular, Bold, Italic, BoldItalic).
+
+I created subsetted fonts, reducing size from ~1MB per file to ~100kb.
