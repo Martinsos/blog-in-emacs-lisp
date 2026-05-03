@@ -3,28 +3,50 @@
 ;;; Blog (meta)data to be available through the blog build pipeline and layouts.
 
 (require 'org)
-(require 'blog-paths (expand-file-name "blog-paths.el" (file-name-directory (or load-file-name buffer-file-name default-directory))))
+(require 'blog-common (expand-file-name "blog-common.el" (file-name-directory (or load-file-name buffer-file-name default-directory))))
 
-;; Collect post metadata (date, title, filename) from all org files in src/posts/.
+(defun blog/--parse-post-date (date-str)
+  "Parse DATE-STR. Must be YYYY-MM-DD. Time is assumed as UTC midnight."
+  (unless (string-match-p "\\`[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\'" date-str)
+    (error "Invalid #+DATE: %S (expected YYYY-MM-DD)" date-str))
+  (date-to-time (concat date-str "T00:00:00+0000"))
+)
+
+;; Collect post metadata (date, title, filename, ...) from all org files in src/posts/.
 ;; Sorted by date, newest first. Available to elisp blocks in published org files, as a global const.
 (defconst
   blog/all-posts
-  (let* ((org-files (directory-files blog/src-posts-dir-abs t "\\.org$")))
+  (let ((org-files (directory-files blog/src-posts-dir-abs t "\\.org$")))
     (sort
      (mapcar
       (lambda (f)
         (with-temp-buffer
           (insert-file-contents f)
           (org-mode)
-          (let* ((keywords (org-collect-keywords '("TITLE" "DATE")))
+          (let* ((keywords (org-collect-keywords '("TITLE" "DATE" "DESCRIPTION" "FILETAGS")))
                  (title (car (alist-get "TITLE" keywords nil nil #'string=)))
-                 (date-str (car (alist-get "DATE" keywords nil nil #'string=))))
-            (unless title (error "Post %s is missing #+TITLE" f))
+                 (date-str (car (alist-get "DATE" keywords nil nil #'string=)))
+                 (description (car (alist-get "DESCRIPTION" keywords nil nil #'string=)))
+                 (tags (split-string (or (car (alist-get "FILETAGS" keywords nil nil #'string=)) "") ":" t))
+                )
+            (unless title
+              (error "Post %s is missing #+TITLE" f))
             (unless (and date-str (not (string-blank-p date-str)))
               (error "Post %s is missing #+DATE" f))
-            (list (date-to-time date-str) title (file-name-nondirectory f)))))
-      org-files)
-     (lambda (a b) (time-less-p (car b) (car a))))
+            (list
+             :date (blog/--parse-post-date date-str)
+             :title title
+             :filename (file-name-nondirectory f)
+             :description description
+             :tags tags
+            )
+          )
+        )
+      )
+      org-files
+     )
+     (lambda (a b) (time-less-p (plist-get b :date) (plist-get a :date)))
+    )
   )
 )
 

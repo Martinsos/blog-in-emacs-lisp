@@ -166,6 +166,50 @@ One thing with Iosevka though is that font files are big, ~1MB each file, to sup
 
 Solution was to "subset" the fonts -> there are tools that can modify the font files to contain only certain subsets of characters (I used [[https://github.com/fonttools/fonttools][fonttools]]), and merely by picking some reasonable subset that makes sense for web, I achieved 10x reduction in size, which is good enough.
 
+** List of posts in Emacs Lisp
+Be it generating a list of all the posts on the homepage, generating a sitemap, or generating an RSS feed XML, what you need is a list of posts (their metadata) at the blog build time, in our case in Emacs Lisp, so we can use it in other parts of our build pipeline.
+
+This was as easy as reading all the .org files in =src/posts= dir, using Org mode to extract the keywords, and then organizing those into a list:
+#+begin_src emacs-lisp :filename build.el
+  ;; ...
+
+  (defconst
+    blog/all-posts
+    (let ((org-files (directory-files (expand-file-name "./src/posts") t "\\.org$")))
+      (sort
+       (mapcar
+        (lambda (f)
+          (with-temp-buffer
+            (insert-file-contents f)
+            (org-mode)
+            (let* ((keywords (org-collect-keywords '("TITLE" "DATE")))
+                   (title (car (alist-get "TITLE" keywords nil nil #'string=)))
+                   (date-str (car (alist-get "DATE" keywords nil nil #'string=)))
+                  )
+              (unless title
+                (error "Post %s is missing #+TITLE" f))
+              (unless (and date-str (not (string-blank-p date-str)))
+                (error "Post %s is missing #+DATE" f))
+              (list
+               :date (blog/--parse-post-date date-str)
+               :title title
+               :filename (file-name-nondirectory f)
+              )
+            )
+          )
+        )
+        org-files
+       )
+       (lambda (a b) (time-less-p (plist-get b :date) (plist-get a :date)))
+      )
+    )
+  )
+
+  ;; ...
+#+end_src
+
+I will show later how I use this data.
+
 ** index.org
 I started with =index.html= and =about.html=, but soon I wanted to also write those in =.org=, so I turned them into =index.org= and =about.org=.
 
@@ -173,41 +217,25 @@ I quite liked that because I could now focus on content instead of the looks, an
 
 And if I need custom html in those files, I can still easily insert it with ~export html~ org blocks, or generate it with Elisp org src blocks.
 
-For instance, I was then able to also very elegantly add an automatically generated list of all the posts in the =index.org=, by first generating a list of them in =build.el=, and then generating the html based on that list via a single ~elisp~ code block in =index.org=:
-
-#+begin_src emacs-lisp :filename build.el
-  ;; ...
-
-  (defconst
-    blog/all-posts
-    (let* ((posts-dir (expand-file-name "./src/posts"))
-           (org-files (directory-files posts-dir t "\\.org$")))
-      ;; ... Process the files and generate the list of their metadata (title, ...).
-    )
-  )
-
-  ;; ...
-#+end_src
+For instance, this enabled me to very elegantly insert html of an automatically generated list of all the posts in the =index.org=, from the posts metadata list I described in [[*List of posts in Emacs Lisp]], via a single ~elisp~ code block in =index.org=:
 
 And then inside an emacs-lisp src block in the =index.org= file, with ~:exports results :results html~:
 #+begin_src emacs-lisp
-  (let ((posts-sorted (sort (copy-sequence blog/all-posts)
-                            (lambda (a b) (time-less-p (car b) (car a))))))
-    (mapconcat
-     (lambda (p)
-       (let ((date-str (format-time-string "%Y-%m-%d" (nth 0 p)))
-             (title (nth 1 p))
-             (filename (nth 2 p)))
-         (format (concat "<a class=\"post-entry\" href=\"./posts/%s\">"
-                         "  <time datetime=\"%s\">%s</time>"
-                         "  <b class=\"post-entry-title\">%s</b>"
-                         "</a>")
-                 (string-replace ".org" ".html" filename)
-                 date-str
-                 date-str
-                 title)))
-     posts-sorted
-     "\n"))
+  (mapconcat
+   (lambda (p)
+     (let ((date-str (format-time-string "%Y-%m-%d" (plist-get p :date)))
+           (title (plist-get p :title))
+           (filename (plist-get p :filename)))
+       (format (concat "<a class=\"post-entry\" href=\"./posts/%s\">"
+                       "  <time datetime=\"%s\">%s</time>"
+                       "  <b class=\"post-entry-title\">%s</b>"
+                       "</a>")
+               (string-replace ".org" ".html" filename)
+               date-str
+               date-str
+               title)))
+   blog/all-posts ; Global variable with metadata of all the posts.
+   "\n")
 #+end_src
 
 ** Building during development vs for publishing
@@ -333,6 +361,51 @@ Verbose, but it was the only solution I found to work, I don't actually use it i
 
 I created a small [[https://github.com/Martinsos/emacs-script-load-path-repro][GitHub repo]] to showcase both the issue and the solution I found.
 
+** Generating RSS feed
+Probably the easiest way to enable external parties to subscribe to new posts on your blog is to have an RSS feed (e.g. =https://myblog.com/rss.xml=).
+And ideally that feed would be automatically updated when you add a new post.
+
+We will go one by one through crucial components needed to set up and automatically generate an RSS feed in our blog.
+
+*** A list of posts metadata in Emacs Lisp
+This is the core data we need to generate our RSS feed, and we already set it up in [[*List of posts in Emacs Lisp]].
+
+*** RSS XML generation logic
+Assuming we have a list of posts metadata, we now need to know how to shape it up into RSS XML and write it to =rss.xml= file.
+
+I won't be posting the whole code here, you can check the full blog code[fn:1] if you wish to see it, but it came down to creating a =build/blog-rss.el= with =(defun blog/rss-generate= that uses a list of posts metadata we prepared before to generate the RSS XML and write it to =dist/rss.xml=.
+
+Some interesting parts to mention is not to forget to use =xml-escape-string= for stuff like post title and description, and then also to make sure to format the dates with RFC-822 format.
+
+*** Triggering our RSS XML generation logic on each blog (re)build
+Turns out that =org-publish='s =org-publish-project-alist= has =:completion-function= property for triggering custom logic right after building/publishing is done, which is perfect place to run our RSS generation logic!
+
+#+begin_src emacs-lisp :filename build.el
+  ;;; ...
+  (setq org-publish-project-alist
+        `(("org-posts"                                 ; <- Notice I turned ' into ` here.
+           :base-directory "./src/posts"
+           :base-extension "org"
+           :recursive t
+           :publishing-directory "./dist/posts"
+           :publishing-function org-publish-to-html
+           :completion-function (,#'blog/rss-generate) ; <- We added this.
+           :with-title nil
+          )
+          ;;; ...
+         )
+  )
+  ;;; ...
+#+end_src
+
+*** <link> in <head> to announce the RSS feed
+To make our RSS feed easily discoverable to external tools, we need to put a special link in the head:
+
+#+begin_src html
+  <link rel="alternate" type="application/rss+xml"
+        title="My blog" href="https://myblog.com/rss.xml" />
+#+end_src
+
 ** Performance and SEO optimizations
 Finally I did some basic perf/SEO optimizations to achieve a decent Lighthouse score:
 - Reduced size of font files by subsetting.
@@ -368,6 +441,6 @@ This blog is my own personal part of the internet, my act of expression, and it 
 - [[https://github.com/bastibe/org-static-blog/][org-static-blog]]: I actually haven't checked out this one properly yet, but has quite some GitHub stars and seems active.
 
 * Footnotes
-[fn:1] https://github.com/Martinsos/blog-in-emacs-lisp/tree/faf7c1dda74c72bb8a99a5b679af0b87e3fcf21d
+[fn:1] https://github.com/Martinsos/blog-in-emacs-lisp/tree/6321343fe153baa6e14e794a3e7a33f775f1cd1a
 [fn:3] https://systemcrafters.net/publishing-websites-with-org-mode/building-the-site/
 [fn:2] [[https://orgmode.org/][Org mode]] is, to oversimplify it, kind of like Markdown on steroids. It is not so easy to shortly explain the extent to which Org mode can go, but it has such a rich and powerful ecosystem built around it that many people use Emacs just for it. You can use it for writing, literate programming, productivity (e.g GTD), note taking, calculations, ... .

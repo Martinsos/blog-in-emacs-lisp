@@ -12,27 +12,31 @@ Hi! My name is Martin and welcome to my blog, where I mainly write about compute
 
 To learn more about me, check the [[./about.org][About]] section.
 
+To be notified about new posts, subscribe to an src_emacs-lisp[:exports results :results raw]{(format "[[./%s][RSS feed]]" blog/rss-xml-in-dist)}.
+
 * Posts
 :PROPERTIES:
 :CUSTOM_ID: posts
 :END:
 
 #+begin_src emacs-lisp :exports results :results html
-  (let ((posts-sorted (sort (copy-sequence blog/all-posts) ;; my/posts is global variable with metadata of all the posts.
-                            (lambda (a b) (time-less-p (car b) (car a))))))
-    (mapconcat
-     (lambda (p)
-       (let ((date-str (format-time-string "%Y-%m-%d" (nth 0 p)))
-             (title (nth 1 p))
-             (filename (nth 2 p)))
-         (format (concat "<a class=\"post-entry\" href=\"./posts/%s\">"
-                         "  <time datetime=\"%s\">%s</time>"
-                         "  <b class=\"post-entry-title\">%s</b>"
-                         "</a>")
-                 (string-replace ".org" ".html" filename)
-                 date-str
-                 date-str
-                 title)))
-     posts-sorted
-     "\n"))
+  (mapconcat
+   (lambda (p)
+     (let ((date-str (format-time-string "%Y-%m-%d" (plist-get p :date)))
+           (title (plist-get p :title))
+           (filename (plist-get p :filename)))
+       (format (concat "<a class=\"post-entry\" href=\"./posts/%s\">"
+                       "  <time datetime=\"%s\">%s</time>"
+                       "  <b class=\"post-entry-title\">%s</b>"
+                       "</a>")
+               (string-replace ".org" ".html" filename)
+               date-str
+               date-str
+               title
+       )
+     )
+   )
+   blog/all-posts ; Global variable with metadata of all the posts.
+   "\n"
+  )
 #+end_src

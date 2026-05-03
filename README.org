@@ -45,7 +45,8 @@ I got initial idea and push for implementing this blog primarily in elisp and or
 
 ** TODO
 - [ ] Add favicon.
-- [ ] Add RSS?
-  - https://list.orgmode.org/20110806215735.GA19596@facies.mindmutation.net/
-- [ ] Do something with the FILETAGS?
+- [ ] Use FILETAGS in blog: show them on homepage, on each post, maybe allow filtering.
 - [ ] Maybe add "Snippets" next to "Posts", for small stuff. Microblogging.
+- [ ] Add "anchor link" to headings so one can click on it/them to anchor the url.
+  I have to figure out best way to do this, see how it is normally done, maybe just whole heading is an anchor link, or it appears on hover?
+- [ ] Not sure if I should do this or not but: a "header line" that shows the context when reading a post, in the sense that if you are at the level 3 heading, it informs you about the parent headings, so you have a feeling where are you at the moment. Probably also tells you about how far along in the post are you, in percentages. Alternative might be having a layout on the side where current heading is somehow marked/highlighted.

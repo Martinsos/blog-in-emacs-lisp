@@ -41,10 +41,11 @@
   (setq org-confirm-babel-evaluate nil)
 )
 
-(require 'blog-paths (expand-file-name "blog-paths.el" blog/-this-dir))
+(require 'blog-common (expand-file-name "blog-common.el" blog/-this-dir))
 (require 'blog-layout (expand-file-name "layout.el" blog/src-dir-abs))
 (require 'blog-post-layout (expand-file-name "layout.el" blog/src-posts-dir-abs))
 (require 'blog-data (expand-file-name "blog-data.el" blog/-this-dir))
+(require 'blog-rss (expand-file-name "blog-rss.el" blog/-this-dir))
 
 (setq
  org-publish-project-alist
@@ -69,6 +70,7 @@
     :html-preamble ,#'blog/html-preamble-post
     :html-inner-template ,#'blog/post-html-inner-template
     :html-postamble ,#'blog/html-postamble-post
+    :completion-function (,#'blog/rss-generate)
    )
    ("static-files"
     ;; Images are only copied as `.webp'. Source `.png'/`.jpg' files may sit next to

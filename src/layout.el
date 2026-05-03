@@ -1,9 +1,13 @@
 ;;; -*- lexical-binding: t; flycheck-disabled-checkers: (emacs-lisp-checkdoc) -*-
 
+(require 'xml)
+
+(require 'blog-common (expand-file-name "../build/blog-common.el" (file-name-directory (or load-file-name buffer-file-name default-directory))))
+
 (defconst
   blog/html-head-common
   (string-join
-   '(
+   `(
      ;; Main CSS.
      "<link rel=\"stylesheet\" href=\"/main.css\"/>"
 
@@ -39,6 +43,14 @@
             hljs.highlightAll();
           });
       </script>"
+
+     ;;; RSS feed auto-discovery: it is how external tools learn about it.
+     ,(concat
+       "<link rel=\"alternate\" type=\"application/rss+xml\"" "\n"
+       "      title=\"" (xml-escape-string blog/title t) "\"" "\n"
+       "      href=\"" blog/url "/" blog/rss-xml-in-dist "\"" "\n"
+       "/>"
+     )
    ) "\n"
   )
 )
