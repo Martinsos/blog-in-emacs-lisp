@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t; flycheck-disabled-checkers: (emacs-lisp-checkdoc) -*-
 
 (require 'ox-publish)
-(require 'blog-layout (expand-file-name "../layout.el" (file-name-directory (or load-file-name buffer-file-name default-directory))))
+(require 'blog-layout (expand-file-name "./layout.el" (file-name-directory (or load-file-name buffer-file-name default-directory))))
 
 (defun blog/html-preamble-post (_info)
   (concat
@@ -33,11 +33,10 @@
    "<div class=\"postamble-post\">" "\n"
    "  <p>Thanks for reading till the end!" "\n"
    "    If you found this interesting, check out " blog/home-link " for more of my writing." "\n"
-   "    To learn more about my current main project, check out " blog/wasp-link "." "\n"
    "  </p>" "\n"
    "</div>" "\n"
    (blog/html-postamble-common info) "\n"
   )
 )
 
-(provide 'blog-post-layout)
+(provide 'blog-layout-post)

@@ -43,7 +43,7 @@
 
 (require 'blog-common (expand-file-name "blog-common.el" blog/-this-dir))
 (require 'blog-layout (expand-file-name "layout.el" blog/src-dir-abs))
-(require 'blog-post-layout (expand-file-name "layout.el" blog/src-posts-dir-abs))
+(require 'blog-layout-post (expand-file-name "layout-post.el" blog/src-dir-abs))
 (require 'blog-data (expand-file-name "blog-data.el" blog/-this-dir))
 (require 'blog-rss (expand-file-name "blog-rss.el" blog/-this-dir))
 

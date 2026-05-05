@@ -1,8 +1,8 @@
 ;;; -*- lexical-binding: t; flycheck-disabled-checkers: (emacs-lisp-checkdoc) -*-
 
-(defconst blog/title "Martinsos' blog")
-(defconst blog/url "https://martinsos.com")
-(defconst blog/description "Personal blog post about software engineering, computer science, startups, and other fun stuff.")
+(defconst blog/title "TODO My blog")
+(defconst blog/url "https://todo-myblog.com")
+(defconst blog/description "TODO My blog where I write about things I like")
 
 (defconst blog/rss-xml-in-dist "rss.xml")
 (defconst blog/posts-dir-in-dist "posts")

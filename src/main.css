@@ -1,6 +1,5 @@
 
 :root {
-  /* I preload the main font in <head>, so update that if main font here changes. */
   --font-main: "Iosevka Aile", sans-serif;
   --font-main-size: 1.2rem;
 

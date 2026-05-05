@@ -1,14 +1,14 @@
-#+TITLE:Martinsos' blog
+#+TITLE:My blog
 #+OPTIONS: title:nil
 
 #+begin_export html
 <header>
-  <h1 class="title">Martinsos<span class="accented">'</span> blog</h1>
+  <h1 class="title">My blog</h1>
 </header>
 #+end_export
 
 
-Hi! My name is Martin and welcome to my blog, where I mainly write about computers, startups, books and whatever side project I am working on when not focusing on my main project (at the moment of writing: [[https://wasp.sh][Wasp]], the innovative web framework). Writing is all me, no AI.
+TODO Some intro text about me and my blog.
 
 To learn more about me, check the [[./about.org][About]] section.
 

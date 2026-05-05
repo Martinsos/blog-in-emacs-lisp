@@ -39,9 +39,9 @@ serve:
 #   our repo because that is how Cloudflare works, it ties deployment envs to a specific git branch
 #   name (and we want to push to production env here).
 publish:
-	@echo "Publishing dist/ to Cloudflare (project: martinsos-blog)!"
+	@echo "Publishing dist/ to Cloudflare (project: todo-my-blog-project-name)!"
 	@echo "Note: if you haven't yet, you will probably want to run 'make build-clean' first and check all is ok."
 	@read -p "Type 'y' to continue: " -n 1 -r; echo; \
 	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
-	  npx wrangler pages deploy ./dist --project-name martinsos-blog --branch=release; \
+	  npx wrangler pages deploy ./dist --project-name todo-my-blog-project-name --branch=release; \
 	fi

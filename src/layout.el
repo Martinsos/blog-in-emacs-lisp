@@ -67,9 +67,5 @@
   blog/home-link
   "<a class=\"home-link\" href=\"/\">Home</a>"
 )
-(defconst
-  blog/wasp-link
-  "<a class=\"wasp-link\" href=\"https://wasp.sh\">Wasp</a>"
-)
 
 (provide 'blog-layout)

@@ -2,3 +2,4 @@
 /dist/
 .last_build_info
 .wrangler/
+*.local.json

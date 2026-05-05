@@ -1,27 +1,28 @@
-* My personal blog (martinsos.com)
+#+TITLE: My blog
 
-** Design principle
-I want my blog to be as simple and intuitive for me to use as possible.
-Being able to start writing immediatelly after not using it for longer time beats having rich features. I like it minimal anyway.
+* TODO Initial setup
+  - [ ] Search the project for "todo" (case insensitive) to locate generic placeholders you will want to fill in.
 
-That means sticking to a small set of evergreen, stable tech that I know well (emacs, bash, Makefile) + keeping its overall structure and features simple.
+* Design principle
+- *Minimal*: small set of core features, simple structure, simple design. Focus on content, not features.
+- *Evergreen*: using a small set of mature, stable tech (Emacs, bash, Makefile, html/css). Minimal/no external dependencies. Minimal updating/maintenance needed.
 
-** Overview
-- =src/= - all the source material that makes up the blog: pages, posts, html layouts (=layout.el=), css, js, images, ...
-  - There is a common =layout.el= at the top level, and then there is a post-specific =layout.el= in =posts/= dir.
+* Overview
+- =src/= - all the source material that makes up the blog: pages, posts, html layouts, css, js, images, ...
+  - There is a common =layout.el= , and then there is a post-specific =layout-post.el=.
 - =build/= - build pipeline: logic (mostly) in elisp that takes all from =src/= and produces a web page from it in =dist/=.
 - =dist/= - an actual blog that can be published (distributed) as a web page.
 - =tools/= - helper tooling, like image optimization and font subsetting.
 
-** Development / writing
-*** Build commands
+* Development / writing
+** Build commands
 - ~make serve~ to run a simple dev server that hosts the built blog (in =dist/=) on =localhost=.
 - ~make build-inc~ (or just ~make~) to generate/build the blog from =src/= in =dist/=.
   This is incremental build, so deleted files will remain around and state in =dist/= can become wrong with time due to that, but is fast and practical for development.
 - ~make build-clean~ to generate/build the blog from =src/= from scratch in =dist/=.
   This is clean build, therefore slow because it first deletes all from =dist/=, but it guarantees that contents of =dist/= will correctly correspond to contents from =src/=. Slow, but guarantees correctness.
 
-***  Typical workflow
+**  Typical workflow
 - Create new or edit existing post in =src/posts/=. Its images/assets goes into the dir next to it with the same name as the post file.
 - When adding an image, run ~tools/optimize-image.sh path/to/image.png~ to produce a =.webp= next to it, and reference the =.webp= from the org file.
   The build only copies =.webp= images to =dist/=; the original =.png=/=.jpg= is kept in the repo as a master but is not published.
@@ -29,24 +30,16 @@ That means sticking to a small set of evergreen, stable tech that I know well (e
 - ~project-compile~ (or ~project-recompile~ on later calls) to re-build the project from emacs as needed while editing the file
 - ~make build-clean~ when preparing to publish the blog.
 
-** Publishing
-I am hosting the blog as static page on Cloudflare.
-
+* Publishing
 First, I should make sure that content in =dist/= is what I want to publish.
 Normally I do ~make build-clean~ and then ~make serve~ to verify it is all looking good.
 
 Then, ~make publish~ to publish the contents of =dist/=!
 
-** Misc
-- For the sake of simplicity, I on purpose don't have sitemap.xml, since this blog is simple enough and well internally linked that having one wouldn't bring any value.
+Currently this blog deploys to Cloudflare, but can as easily be deployed to any static content hosting (provider).
 
-** Mentions
-I got initial idea and push for implementing this blog primarily in elisp and org from this great video from System Crafters: [[https://systemcrafters.net/publishing-websites-with-org-mode/building-the-site/][Build Your Website with Org Mode]].
+* Misc
+- For the sake of simplicity, I on purpose don't have =sitemap.xml=, since this blog is simple enough and well internally linked that having one wouldn't bring any value.
 
-** TODO
-- [ ] Add favicon.
-- [ ] Use FILETAGS in blog: show them on homepage, on each post, maybe allow filtering.
-- [ ] Maybe add "Snippets" next to "Posts", for small stuff. Microblogging.
-- [ ] Add "anchor link" to headings so one can click on it/them to anchor the url.
-  I have to figure out best way to do this, see how it is normally done, maybe just whole heading is an anchor link, or it appears on hover?
-- [ ] Not sure if I should do this or not but: a "header line" that shows the context when reading a post, in the sense that if you are at the level 3 heading, it informs you about the parent headings, so you have a feeling where are you at the moment. Probably also tells you about how far along in the post are you, in percentages. Alternative might be having a layout on the side where current heading is somehow marked/highlighted.
+* Mentions
+Initial idea and push for implementing this blog primarily in Emacs Lisp and Org mode came from this great video from System Crafters: [[https://systemcrafters.net/publishing-websites-with-org-mode/building-the-site/][Build Your Website with Org Mode]].
