@@ -41,5 +41,8 @@ Currently this blog deploys to Cloudflare, but can as easily be deployed to any 
 * Misc
 - For the sake of simplicity, I on purpose don't have =sitemap.xml=, since this blog is simple enough and well internally linked that having one wouldn't bring any value.
 
+* AI usage
+This project is not vibe coded or AI driven. AI is a useful tool and I/we do use it, but every line of code and decision in this project is owned by human and code quality is maintained to reasonably high standards.
+
 * Mentions
 Initial idea and push for implementing this blog primarily in Emacs Lisp and Org mode came from this great video from System Crafters: [[https://systemcrafters.net/publishing-websites-with-org-mode/building-the-site/][Build Your Website with Org Mode]].
