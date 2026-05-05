@@ -441,6 +441,6 @@ This blog is my own personal part of the internet, my act of expression, and it 
 - [[https://github.com/bastibe/org-static-blog/][org-static-blog]]: I actually haven't checked out this one properly yet, but has quite some GitHub stars and seems active.
 
 * Footnotes
-[fn:1] https://github.com/Martinsos/blog-in-emacs-lisp/tree/6321343fe153baa6e14e794a3e7a33f775f1cd1a
+[fn:1] https://github.com/Martinsos/blog-in-emacs-lisp
 [fn:3] https://systemcrafters.net/publishing-websites-with-org-mode/building-the-site/
 [fn:2] [[https://orgmode.org/][Org mode]] is, to oversimplify it, kind of like Markdown on steroids. It is not so easy to shortly explain the extent to which Org mode can go, but it has such a rich and powerful ecosystem built around it that many people use Emacs just for it. You can use it for writing, literate programming, productivity (e.g GTD), note taking, calculations, ... .
