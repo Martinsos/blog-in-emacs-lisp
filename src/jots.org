@@ -1,0 +1,15 @@
+#+TITLE: Jots ✎
+* Mock jot 2
+:PROPERTIES:
+:DATE:     2026-05-06
+:CUSTOM_ID: some-custom-id
+:END:
+If you put a =DATE= property, it will be shown in the exported HTML. \\
+You can also set :CUSTOM_ID: if you don't want id to be derived from the jot heading.
+
+* The idea of a jot
+:PROPERTIES:
+:DATE:     2026-05-01
+:END:
+Jot is when you want to write some more casual and shorter than a post. "microblogging".
+

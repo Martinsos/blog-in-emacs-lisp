@@ -5,13 +5,6 @@
 (require 'org)
 (require 'blog-common (expand-file-name "blog-common.el" (file-name-directory (or load-file-name buffer-file-name default-directory))))
 
-(defun blog/--parse-post-date (date-str)
-  "Parse DATE-STR. Must be YYYY-MM-DD. Time is assumed as UTC midnight."
-  (unless (string-match-p "\\`[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\'" date-str)
-    (error "Invalid #+DATE: %S (expected YYYY-MM-DD)" date-str))
-  (date-to-time (concat date-str "T00:00:00+0000"))
-)
-
 ;; Collect post metadata (date, title, filename, ...) from all org files in src/posts/.
 ;; Sorted by date, newest first. Available to elisp blocks in published org files, as a global const.
 (defconst
@@ -34,7 +27,7 @@
             (unless (and date-str (not (string-blank-p date-str)))
               (error "Post %s is missing #+DATE" f))
             (list
-             :date (blog/--parse-post-date date-str)
+             :date (blog/parse-date date-str)
              :title title
              :filename (file-name-nondirectory f)
              :description description

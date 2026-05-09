@@ -1,5 +1,5 @@
 #+TITLE:My blog
-#+OPTIONS: title:nil
+#+OPTIONS: title:nil html-heading-anchors:nil
 
 #+begin_export html
 <header>
@@ -7,18 +7,13 @@
 </header>
 #+end_export
 
-
 TODO Some intro text about me and my blog.
 
 To learn more about me, check the [[./about.org][About]] section.
 
 To be notified about new posts, subscribe to an src_emacs-lisp[:exports results :results raw]{(format "[[./%s][RSS feed]]" blog/rss-xml-in-dist)}.
 
-* Posts
-:PROPERTIES:
-:CUSTOM_ID: posts
-:END:
-
+* Posts | [[./jots.html][Jots]]
 #+begin_src emacs-lisp :exports results :results html
   (mapconcat
    (lambda (p)

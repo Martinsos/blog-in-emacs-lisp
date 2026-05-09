@@ -5,6 +5,11 @@
 (require 'blog-common (expand-file-name "../build/blog-common.el" (file-name-directory (or load-file-name buffer-file-name default-directory))))
 
 (defconst
+  blog/home-link
+  "<a class=\"home-link\" href=\"/\">Home</a>"
+)
+
+(defconst
   blog/html-head-common
   (string-join
    `(
@@ -55,17 +60,24 @@
   )
 )
 
+(defun blog/html-preamble-common (info)
+  (let ((output-file-abs (plist-get info :output-file)))
+    (unless (string= output-file-abs (expand-file-name "index.html" blog/dist-dir-abs))
+      (concat
+       "<nav aria-label=\"Site\">" "\n"
+       "  " blog/home-link "\n"
+       "</nav>" "\n"
+      )
+    )
+  )
+)
+
 (defun blog/html-postamble-common (_info)
   (concat
    "<div class=\"postamble-common\">" "\n"
    "  <p>Built with care with Emacs (Org Mode).</p>" "\n"
    "</div>" "\n"
   )
-)
-
-(defconst
-  blog/home-link
-  "<a class=\"home-link\" href=\"/\">Home</a>"
 )
 
 (provide 'blog-layout)

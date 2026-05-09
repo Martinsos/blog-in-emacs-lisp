@@ -5,12 +5,12 @@
 
 #+TOC: headlines 1
 
-* TL;DR:
+* TL;DR
 I wanted to rewrite my blog from Jekyll to a minimal set of evergreen tech that won't get outdated in 10 years, while also being able to write posts in Emacs' Org mode instead of Markdown.
 
 I ended up with an elegant solution based on basic html/css/js and Emacs (Lisp) as a build pipeline!
 
-Here I describe how I did it and also share a repo[fn:1] with full working code.
+Here I describe how I did it and I also share a template repo[fn:1] with full working code you can use to create your own blog.
 
 * Time for a new blog +post+
 
@@ -146,7 +146,7 @@ This is it at its essence! As mentioned above, this is very similar to the appro
 
 In practice, I went further and added quite a few upgrades on top of the essential setup described above, and I will explain these upgrades at the high level below.
 
-For full working code, check out my *github repo*[fn:1] that reflects the implementation of my blog at the moment of publishing this blog post.
+For full working code, check out my *github template repo*[fn:1] that I derived from my personal blog implementation described in this blog.
 You can try it out easily by checking it out and running ~make~, and if you want to create your own blog in Emacs Lisp, you can use it as a working starting point. Maybe change the design a bit ;).
 
 ** Syntax highlighting

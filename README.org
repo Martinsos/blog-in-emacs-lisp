@@ -1,7 +1,10 @@
 #+TITLE: My blog
 
-* TODO Initial setup
-  - [ ] Search the project for "todo" (case insensitive) to locate generic placeholders you will want to fill in.
+* TODO INITIAL SETUP 👈
+  - [ ] Clone this repo.
+  - [ ] Search the project for "todo" (case insensitive) to locate generic placeholders and fill them in (or do it later).
+  - [ ] Design (css and fonts) is exactly the same as from my personal blog (https://martinsos.com), from which this template is derived, so if you wish to change it a bit for yourself, I would be grateful :). If not, hey, at least I will be proud knowing you used this template when I see your blog in the wild!
+  - [ ] That is it! This is now your blog in Emacs Lisp. Delete this heading, then read the rest of the README to learn about the project and how to run it. If you will be making the blog source public, consider adding a link to this template repo to the mentions/credits.
 
 * Design principle
 - *Minimal*: small set of core features, simple structure, simple design. Focus on content, not features.

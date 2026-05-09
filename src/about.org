@@ -1,3 +1,4 @@
 #+TITLE:About me
+#+OPTIONS: html-heading-anchors:nil
 
 TODO

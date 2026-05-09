@@ -1,6 +1,7 @@
 ;;; -*- lexical-binding: t; flycheck-disabled-checkers: (emacs-lisp-checkdoc) -*-
 
 (require 'ox-publish)
+(require 'blog-common (expand-file-name "blog-common.el" (file-name-directory (or load-file-name buffer-file-name default-directory))))
 
 ;; Here I extend the 'html (from ox-html.el) backend to define my own, customized version of it.
 ;; Mostly I turn off a lot of its default options (default css, default js, ...),
@@ -34,10 +35,12 @@
                           (content "main" "content")
                           (postamble "footer" "postamble")))
     (:html-inner-template nil nil nil)         ; Custom option I created for wrapping the content.
+    (:html-heading-anchors nil "html-heading-anchors" t) ; Custom option I created for toggling heading anchors.
    )
   :translate-alist
   '((src-block . blog/org-html-src-block)
     (inner-template . blog/org-html-inner-template)
+    (headline . blog/org-html-headline)
    )
 )
 
@@ -81,6 +84,40 @@ contextual information."
                       )) " | ")
               )
               (format "<pre><code class=\"language-%s\"%s>%s</code></pre>" (or lang "plaintext") id code)
+      )
+    )
+  )
+)
+
+(defun blog/org-html-headline (headline contents info)
+  ;; - `headline-html' is not just the heading, but also all the content beneath it!
+  ;; - we check if `headline-html' is non-nil because it is actually nil in case
+  ;;   of footnotes -> even though they are a heading, `org-html-headline' returns
+  ;;   nil for them because they are handled separately with specialized export function.
+  (when-let ((headline-html (org-html-headline headline contents info)))
+    (let ((headline-id (or (plist-get (cadr headline) :CUSTOM_ID)
+                           (org-export-get-reference headline info)))
+          (date-str (org-element-property :DATE headline))
+         )
+      ;; Wrap the first hN in <header>, enabling us to add more elements next to it.
+      (if (string-match "\\(<h[1-6][^>]*>.*?</h[1-6]>\\)" headline-html)
+          (replace-match
+           (concat
+            "<header class=\"headline\">" "\n"
+            "  <div class=\"heading-title\">" "\n"
+            "    \\1" "\n"
+            (when (plist-get info :html-heading-anchors)
+              (concat "    <a class=\"heading-anchor-link\" href=\"#" headline-id "\">🔗</a>"))
+            "  </div>"
+            "  <div class=\"heading-meta\">" "\n"
+            (when date-str
+              (concat "    <time class=\"heading-date\" datetime=\"" date-str "\">" date-str "</time>" "\n"))
+            "  </div>"
+            "</header>"
+           )
+           nil nil headline-html
+          )
+       headline-html
       )
     )
   )

@@ -57,6 +57,7 @@
     :publishing-directory ,blog/dist-dir-abs
     :publishing-function blog/org-publish-to-html
     :html-head ,blog/html-head-common
+    :html-preamble ,#'blog/html-preamble-common
     :html-postamble ,#'blog/html-postamble-common
    )
    ("org-posts"
@@ -65,12 +66,12 @@
     :recursive t
     :publishing-directory ,blog/dist-posts-dir-abs
     :publishing-function blog/org-publish-to-html
+    :completion-function (,#'blog/rss-generate)
     :with-title nil
     :html-head ,blog/html-head-common
-    :html-preamble ,#'blog/html-preamble-post
-    :html-inner-template ,#'blog/post-html-inner-template
+    :html-preamble ,#'blog/html-preamble-common
+    :html-inner-template ,#'blog/html-inner-template-post
     :html-postamble ,#'blog/html-postamble-post
-    :completion-function (,#'blog/rss-generate)
    )
    ("static-files"
     ;; Images are only copied as `.webp'. Source `.png'/`.jpg' files may sit next to
