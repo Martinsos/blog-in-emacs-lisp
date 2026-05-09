@@ -6,7 +6,7 @@
   - [ ] Design (css and fonts) is exactly the same as from my personal blog (https://martinsos.com), from which this template is derived, so if you wish to change it a bit for yourself, I would be grateful :). If not, hey, at least I will be proud knowing you used this template when I see your blog in the wild!
   - [ ] That is it! This is now your blog in Emacs Lisp. Delete this heading, then read the rest of the README to learn about the project and how to run it. If you will be making the blog source public, consider adding a link to this template repo to the mentions/credits.
 
-* Design principle
+* Design principles
 - *Minimal*: small set of core features, simple structure, simple design. Focus on content, not features.
 - *Evergreen*: using a small set of mature, stable tech (Emacs, bash, Makefile, html/css). Minimal/no external dependencies. Minimal updating/maintenance needed.
 
