@@ -6,11 +6,26 @@
   - [ ] Design (css and fonts) is exactly the same as from my personal blog (https://martinsos.com), from which this template is derived, so if you wish to change it a bit for yourself, I would be grateful :). If not, hey, at least I will be proud knowing you used this template when I see your blog in the wild!
   - [ ] That is it! This is now your blog in Emacs Lisp. Delete this heading, then read the rest of the README to learn about the project and how to run it. If you will be making the blog source public, consider adding a link to this template repo to the mentions/credits.
 
+[[./blog-preview.png]]
+
 * Design principles
 - *Minimal*: small set of core features, simple structure, simple design. Focus on content, not features.
 - *Evergreen*: using a small set of mature, stable tech (Emacs, bash, Makefile, html/css). Minimal/no external dependencies. Minimal updating/maintenance needed.
 
-* Overview
+* Main features
+- Any page can be written in Org mode and is converted to html via =ox-publish= built-in Emacs package.
+- Build pipeline is fully written in Emacs Lisp, uses no external packages, is decoupled from any Emacs config used to edit the blog, and produces a simple static web site.
+- Main page, about page, posts, jots (microblogging).
+- Auto-generated list of posts on the main page.
+- Auto-generated RSS feed.
+- Auto-generated anchor link for each heading.
+- Minimal CSS for modern, minimal look.
+- Nice fonts (Iosevka) + instructions how to set up any other.
+- Rich code highlighting (highlight.js) with additional custom support for Emacs Lisp.
+- Short utility scripts (tools) for manually optimizing images and fonts.
+- Optimized for SEO / performance (to a practical degree).
+
+* Code overview
 - =src/= - all the source material that makes up the blog: pages, posts, html layouts, css, js, images, ...
   - There is a common =layout.el= , and then there is a post-specific =layout-post.el=.
 - =build/= - build pipeline: logic (mostly) in elisp that takes all from =src/= and produces a web page from it in =dist/=.
